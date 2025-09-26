@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { WordCloudData } from '../types';
+import Tooltip from './Tooltip';
 
 interface WordCloudVisualizationProps {
   data: WordCloudData;
@@ -15,6 +16,10 @@ interface WordElement {
   x: number;
   y: number;
   rotation: number;
+  rotationSpeed: number; // rotation velocity
+  vx: number; // velocity x
+  vy: number; // velocity y
+  id: string;
 }
 
 const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data }) => {
@@ -86,11 +91,18 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
       return (Math.random() - 0.5) * 30; // -15 to +15 degrees
     };
 
-    // Generate positioned elements
+    // Generate positioned elements with physics
     return words.map(([word, frequency], index) => {
       const size = getWordSize(frequency);
       const orientation = getOrientation(index);
       const rotation = getRotation(orientation);
+
+      // Velocities based on word frequency (more frequent = slower)
+      const intensity = frequency / maxFrequency;
+      const baseSpeed = 0.3 + (1 - intensity) * 0.7; // 0.3 to 1.0
+
+      // Rotation speed: slower for bigger/more frequent words, faster for smaller ones
+      const rotationSpeed = (Math.random() - 0.5) * (0.5 + (1 - intensity) * 1.5); // -1.0 to 1.0 degrees per frame
 
       return {
         word,
@@ -99,14 +111,85 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
         color: getWordColor(frequency, index),
         orientation,
         fontWeight: getFontWeight(frequency),
-        x: Math.random() * 80 + 10, // 10% to 90% of container width
-        y: Math.random() * 80 + 10, // 10% to 90% of container height
-        rotation
+        x: Math.random() * 70 + 15, // 15% to 85% to avoid edge spawning
+        y: Math.random() * 70 + 15, // 15% to 85% to avoid edge spawning
+        rotation,
+        rotationSpeed,
+        vx: (Math.random() - 0.5) * baseSpeed * 2, // Random direction X
+        vy: (Math.random() - 0.5) * baseSpeed * 2, // Random direction Y
+        id: `${word}-${index}`
       } as WordElement;
     });
   }, [data.word_frequencies]);
 
   const maxFrequency = Math.max(...Object.values(data.word_frequencies));
+  const [animatedElements, setAnimatedElements] = useState<WordElement[]>(wordElements);
+  const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
+  const animationRef = useRef<number>();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setAnimatedElements(wordElements);
+  }, [wordElements]);
+
+  useEffect(() => {
+    if (!isAnimationEnabled) {
+      // Stop animation and reset to original positions
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      setAnimatedElements(wordElements);
+      return;
+    }
+
+    const animate = () => {
+      setAnimatedElements(prevElements => {
+        return prevElements.map(element => {
+          let newX = element.x + element.vx;
+          let newY = element.y + element.vy;
+          let newVx = element.vx;
+          let newVy = element.vy;
+          let newRotation = element.rotation + element.rotationSpeed;
+
+          // Normalize rotation to keep it between 0-360 degrees for performance
+          if (newRotation > 360) newRotation -= 360;
+          if (newRotation < 0) newRotation += 360;
+
+          // Bounce off container edges with some padding
+          const padding = 5; // 5% padding from edges
+
+          if (newX <= padding || newX >= 100 - padding) {
+            newVx = -newVx * 0.8; // Slight dampening on bounce
+            newX = newX <= padding ? padding : 100 - padding;
+          }
+
+          if (newY <= padding || newY >= 100 - padding) {
+            newVy = -newVy * 0.8; // Slight dampening on bounce
+            newY = newY <= padding ? padding : 100 - padding;
+          }
+
+          return {
+            ...element,
+            x: newX,
+            y: newY,
+            rotation: newRotation,
+            vx: newVx,
+            vy: newVy,
+          };
+        });
+      });
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isAnimationEnabled, wordElements]);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
@@ -119,11 +202,14 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
       </div>
 
       {/* Modern WordCloud Container */}
-      <div className="relative w-full h-96 bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 rounded-xl overflow-hidden border border-gray-200">
-        {wordElements.map((element, index) => (
+      <div
+        ref={containerRef}
+        className="relative w-full h-96 bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 rounded-xl overflow-hidden border border-gray-200"
+      >
+        {animatedElements.map((element) => (
           <div
-            key={`${element.word}-${index}`}
-            className="absolute transition-all duration-300 hover:scale-110 hover:z-10 cursor-pointer select-none"
+            key={element.id}
+            className="absolute cursor-pointer select-none hover:scale-110 hover:z-20 transition-transform duration-200"
             style={{
               left: `${element.x}%`,
               top: `${element.y}%`,
@@ -132,7 +218,7 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
               color: element.color,
               fontWeight: element.fontWeight,
               fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.15)',
               lineHeight: 1,
               whiteSpace: 'nowrap',
               zIndex: Math.round(element.frequency),
@@ -174,6 +260,43 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
               );
             })}
           </div>
+
+          {/* Animation Control */}
+          <div className="mt-4 pt-3 border-t border-gray-200">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
+                Modo de visualización
+              </label>
+              <div className="relative bg-gray-100 rounded-lg p-1 flex">
+                <button
+                  onClick={() => setIsAnimationEnabled(false)}
+                  className={`flex-1 py-2 px-4 rounded-md font-medium text-sm transition-all duration-200 ${
+                    !isAnimationEnabled
+                      ? 'bg-red-500 text-white shadow-md transform scale-105'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                  }`}
+                >
+                  Estático
+                </button>
+                <button
+                  onClick={() => setIsAnimationEnabled(true)}
+                  className={`flex-1 py-2 px-4 rounded-md font-medium text-sm transition-all duration-200 ${
+                    isAnimationEnabled
+                      ? 'bg-blue-500 text-white shadow-md transform scale-105'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                  }`}
+                >
+                  Animado
+                </button>
+              </div>
+              <p className="text-xs text-gray-500">
+                {isAnimationEnabled
+                  ? 'Las palabras se mueven y rotan continuamente'
+                  : 'Visualización tradicional sin movimiento'
+                }
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Statistics */}
@@ -183,18 +306,38 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
             Statistics
           </h4>
           <div className="space-y-3">
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{data.total_words.toLocaleString()}</div>
-              <div className="text-sm text-blue-700">Total Words Processed</div>
-            </div>
-            <div className="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{data.unique_words.toLocaleString()}</div>
-              <div className="text-sm text-green-700">Unique Words Found</div>
-            </div>
-            <div className="bg-gradient-to-r from-purple-50 to-purple-100 px-4 py-3 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">{Math.round((data.unique_words / data.total_words) * 100)}%</div>
-              <div className="text-sm text-purple-700">Vocabulary Diversity</div>
-            </div>
+            <Tooltip
+              content="Total number of words analyzed from your input text or URL content, including all repetitions. This represents the complete volume of text processed by the system."
+              position="left"
+              delay={400}
+            >
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 rounded-lg cursor-help transition-transform duration-200 hover:scale-105 hover:shadow-md">
+                <div className="text-2xl font-bold text-blue-600">{data.total_words.toLocaleString()}</div>
+                <div className="text-sm text-blue-700">Total Words Processed</div>
+              </div>
+            </Tooltip>
+
+            <Tooltip
+              content="Number of distinct words discovered after removing duplicates and filtering out common stopwords (like 'the', 'and', 'is'). This shows the actual vocabulary richness of your content."
+              position="left"
+              delay={400}
+            >
+              <div className="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 rounded-lg cursor-help transition-transform duration-200 hover:scale-105 hover:shadow-md">
+                <div className="text-2xl font-bold text-green-600">{data.unique_words.toLocaleString()}</div>
+                <div className="text-sm text-green-700">Unique Words Found</div>
+              </div>
+            </Tooltip>
+
+            <Tooltip
+              content="Percentage representing vocabulary richness - calculated as (unique words ÷ total words) × 100. Higher percentages indicate more diverse and varied language use, while lower percentages suggest more repetitive content."
+              position="left"
+              delay={400}
+            >
+              <div className="bg-gradient-to-r from-purple-50 to-purple-100 px-4 py-3 rounded-lg cursor-help transition-transform duration-200 hover:scale-105 hover:shadow-md">
+                <div className="text-2xl font-bold text-purple-600">{Math.round((data.unique_words / data.total_words) * 100)}%</div>
+                <div className="text-sm text-purple-700">Vocabulary Diversity</div>
+              </div>
+            </Tooltip>
           </div>
         </div>
       </div>

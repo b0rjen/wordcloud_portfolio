@@ -22,6 +22,7 @@ A modern full-stack application for generating interactive word clouds from text
   - Hover scaling and z-index management
   - Text shadows for visual depth
   - Smooth transitions and animations
+  - **Physics-Based Animation Mode**: Toggle between static and animated visualization with bouncing effects and rotation
 - **Enhanced Statistics Dashboard**:
   - Progress bars showing relative word frequencies
   - Vocabulary diversity metrics
@@ -163,7 +164,12 @@ The frontend will be available at `http://localhost:5173`
 - **Rotation Effects**: Vertical words at ±90°, horizontal words with subtle angles
 - **Visual Depth**: Text shadows, gradients, and overlay effects
 - **Interactive Hover**: Scale transforms and dynamic z-indexing
-- **Performance Optimized**: React.useMemo for efficient re-renders
+- **Animation System**: Physics-based animations with:
+  - Bouncing effects with collision detection
+  - Individual word rotation on their own axes
+  - Velocity-based movement with dampening
+  - Toggle control between static and animated modes
+- **Performance Optimized**: React.useMemo for efficient re-renders and requestAnimationFrame for smooth 60fps animations
 
 ### Export Functionality
 - High-quality PNG generation
@@ -233,6 +239,7 @@ Una aplicación full-stack moderna para generar nubes de palabras interactivas a
   - Escalado hover y gestión de z-index
   - Sombras de texto para profundidad visual
   - Transiciones y animaciones suaves
+  - **Modo de Animación Basado en Física**: Alternar entre visualización estática y animada con efectos de rebote y rotación
 - **Panel de Estadísticas Mejorado**:
   - Barras de progreso mostrando frecuencias relativas de palabras
   - Métricas de diversidad vocabulario
@@ -374,7 +381,12 @@ El frontend estará disponible en `http://localhost:5173`
 - **Efectos de Rotación**: Palabras verticales a ±90°, palabras horizontales con ángulos sutiles
 - **Profundidad Visual**: Sombras de texto, gradientes y efectos de superposición
 - **Hover Interactivo**: Transformaciones de escala e indexación z dinámica
-- **Optimizado para Rendimiento**: React.useMemo para re-renderizados eficientes
+- **Sistema de Animación**: Animaciones basadas en física con:
+  - Efectos de rebote con detección de colisiones
+  - Rotación individual de palabras en sus propios ejes
+  - Movimiento basado en velocidad con amortiguación
+  - Control de alternancia entre modos estático y animado
+- **Optimizado para Rendimiento**: React.useMemo para re-renderizados eficientes y requestAnimationFrame para animaciones suaves a 60fps
 
 ### Funcionalidad de Exportación
 - Generación PNG de alta calidad
