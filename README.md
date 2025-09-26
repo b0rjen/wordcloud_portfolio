@@ -12,8 +12,22 @@ A modern full-stack application for generating interactive word clouds from text
 
 - **Dual Input Methods**: Generate word clouds from direct text input or by scraping web URLs
 - **Multi-language Support**: Supports multiple languages with appropriate stopwords filtering
-- **Interactive Visualization**: CSS-based word cloud with hover effects and frequency-based sizing
-- **Image Export**: Download word clouds as PNG images
+- **Advanced PowerBI-style Visualization**:
+  - Mixed orientations (horizontal and vertical words)
+  - Dynamic rotations (-90°, 90°, and subtle angles)
+  - Professional color palettes inspired by PowerBI and Tableau
+  - Variable font weights (400-800) based on word frequency
+  - Absolute positioning with natural layout distribution
+- **Interactive Effects**:
+  - Hover scaling and z-index management
+  - Text shadows for visual depth
+  - Smooth transitions and animations
+- **Enhanced Statistics Dashboard**:
+  - Progress bars showing relative word frequencies
+  - Vocabulary diversity metrics
+  - Gradient-styled information cards
+  - Scrollable top words panel
+- **Image Export**: Download word clouds as high-quality PNG images
 - **Modern UI**: Responsive React frontend with Tailwind CSS
 - **Fast API**: Python FastAPI backend with automatic documentation
 
@@ -142,11 +156,14 @@ The frontend will be available at `http://localhost:5173`
 - Special character handling
 
 ### Word Cloud Visualization
-- Frequency-based font sizing
-- Color coding by word importance
-- Hover effects with frequency display
-- Top words summary panel
-- Responsive layout
+- **PowerBI-inspired Design**: Professional layouts with mixed orientations
+- **Dynamic Positioning**: Absolute positioning with collision-aware placement
+- **Advanced Color System**: 5 professional color palettes with intensity-based selection
+- **Typography Hierarchy**: Variable font weights (400-800) and sizes (14px-64px)
+- **Rotation Effects**: Vertical words at ±90°, horizontal words with subtle angles
+- **Visual Depth**: Text shadows, gradients, and overlay effects
+- **Interactive Hover**: Scale transforms and dynamic z-indexing
+- **Performance Optimized**: React.useMemo for efficient re-renders
 
 ### Export Functionality
 - High-quality PNG generation
@@ -172,10 +189,12 @@ The frontend will be available at `http://localhost:5173`
 - CORS configuration for frontend integration
 
 ### Frontend Architecture
-- Component-based React structure
-- TypeScript for type safety
-- Responsive design with Tailwind CSS
-- Modern React hooks and state management
+- Component-based React structure with advanced data visualization
+- TypeScript for type safety and interface definitions
+- Responsive design with Tailwind CSS and custom gradient backgrounds
+- Modern React hooks (useMemo) for performance optimization
+- Advanced CSS transforms and positioning for dynamic layouts
+- Professional color palette system with PowerBI-inspired themes
 
 ## Future Enhancements
 
@@ -204,8 +223,22 @@ Una aplicación full-stack moderna para generar nubes de palabras interactivas a
 
 - **Métodos de Entrada Duales**: Genera nubes de palabras desde entrada de texto directo o extrayendo contenido de URLs web
 - **Soporte Multi-idioma**: Compatible con múltiples idiomas con filtrado apropiado de palabras vacías
-- **Visualización Interactiva**: Nube de palabras basada en CSS con efectos hover y tamaño basado en frecuencia
-- **Exportación de Imágenes**: Descarga nubes de palabras como imágenes PNG
+- **Visualización Avanzada Estilo PowerBI**:
+  - Orientaciones mixtas (palabras horizontales y verticales)
+  - Rotaciones dinámicas (-90°, 90°, y ángulos sutiles)
+  - Paletas de colores profesionales inspiradas en PowerBI y Tableau
+  - Pesos de fuente variables (400-800) basados en frecuencia de palabras
+  - Posicionamiento absoluto con distribución natural del layout
+- **Efectos Interactivos**:
+  - Escalado hover y gestión de z-index
+  - Sombras de texto para profundidad visual
+  - Transiciones y animaciones suaves
+- **Panel de Estadísticas Mejorado**:
+  - Barras de progreso mostrando frecuencias relativas de palabras
+  - Métricas de diversidad vocabulario
+  - Tarjetas de información con gradientes estilizados
+  - Panel de palabras principales con scroll
+- **Exportación de Imágenes**: Descarga nubes de palabras como imágenes PNG de alta calidad
 - **UI Moderna**: Frontend React responsivo con Tailwind CSS
 - **API Rápida**: Backend Python FastAPI con documentación automática
 
@@ -334,11 +367,14 @@ El frontend estará disponible en `http://localhost:5173`
 - Manejo de caracteres especiales
 
 ### Visualización de Nube de Palabras
-- Tamaño de fuente basado en frecuencia
-- Codificación de color por importancia de palabra
-- Efectos hover con visualización de frecuencia
-- Panel resumen de palabras principales
-- Diseño responsivo
+- **Diseño Inspirado en PowerBI**: Layouts profesionales con orientaciones mixtas
+- **Posicionamiento Dinámico**: Posicionamiento absoluto con colocación consciente de colisiones
+- **Sistema de Color Avanzado**: 5 paletas de colores profesionales con selección basada en intensidad
+- **Jerarquía Tipográfica**: Pesos de fuente variables (400-800) y tamaños (14px-64px)
+- **Efectos de Rotación**: Palabras verticales a ±90°, palabras horizontales con ángulos sutiles
+- **Profundidad Visual**: Sombras de texto, gradientes y efectos de superposición
+- **Hover Interactivo**: Transformaciones de escala e indexación z dinámica
+- **Optimizado para Rendimiento**: React.useMemo para re-renderizados eficientes
 
 ### Funcionalidad de Exportación
 - Generación PNG de alta calidad
@@ -364,10 +400,12 @@ El frontend estará disponible en `http://localhost:5173`
 - Configuración CORS para integración con frontend
 
 ### Arquitectura del Frontend
-- Estructura React basada en componentes
-- TypeScript para seguridad de tipos
-- Diseño responsivo con Tailwind CSS
-- Hooks React modernos y gestión de estado
+- Estructura React basada en componentes con visualización avanzada de datos
+- TypeScript para seguridad de tipos y definiciones de interfaces
+- Diseño responsivo con Tailwind CSS y fondos de gradiente personalizados
+- Hooks React modernos (useMemo) para optimización de rendimiento
+- Transformaciones CSS avanzadas y posicionamiento para layouts dinámicos
+- Sistema de paleta de colores profesional con temas inspirados en PowerBI
 
 ## Mejoras Futuras
 
