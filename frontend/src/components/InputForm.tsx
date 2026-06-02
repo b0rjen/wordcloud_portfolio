@@ -11,7 +11,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, onDownloadImage, loadin
   const [inputType, setInputType] = useState<'text' | 'url'>('text');
   const [text, setText] = useState('');
   const [url, setUrl] = useState('');
-  const [language, setLanguage] = useState('english');
+  const [language, setLanguage] = useState('spanish');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,8 +88,8 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, onDownloadImage, loadin
             onChange={(e) => setLanguage(e.target.value)}
             className="select-shell"
           >
-            <option value="english">Inglés</option>
             <option value="spanish">Español</option>
+            <option value="english">Inglés</option>
             <option value="french">Français</option>
             <option value="german">Deutsch</option>
             <option value="italian">Italiano</option>

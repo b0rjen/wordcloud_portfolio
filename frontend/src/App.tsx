@@ -101,7 +101,7 @@ function App() {
             <span>FastAPI · React · NLTK · Nubes de palabras</span>
           </div>
           <div className="space-y-5">
-            <h1 className="hero-title mx-auto max-w-4xl">GeneraWordclouds by b0rjen</h1>
+            <h1 className="hero-title mx-auto max-w-5xl">GeneraWordclouds by b0rjen</h1>
             <p className="hero-copy mx-auto">
               Convierte textos o URLs en nubes de palabras interactivas, con estadísticas claras,
               exportación PNG en memoria y una interfaz inspirada en un portfolio técnico.
@@ -188,25 +188,49 @@ function App() {
           )}
 
           <section className="surface-card surface-card-hover p-6 md:p-8">
-            <p className="section-kicker">Resumen técnico</p>
-            <h2 className="section-title mt-2 text-center md:text-left">Listo para Raspberry Pi y Caddy</h2>
+            <p className="section-kicker">Stack empleado</p>
+            <h2 className="section-title mt-2 text-center md:text-left">Backend, frontend y despliegue</h2>
             <p className="section-copy mt-3 text-center md:text-left">
-              El backend predescarga NLTK en build, sirve el frontend estático y genera las imágenes
-              en memoria para evitar acumulación de archivos temporales.
+              Estas son las piezas principales que dan forma al proyecto y a su flujo de generación
+              de nubes de palabras.
             </p>
 
-            <div className="hero-metrics mt-6 md:grid md:grid-cols-3">
-              <div className="metric-card">
-                <p className="metric-label">Arquitectura</p>
-                <p className="metric-value mt-2">Un solo contenedor</p>
+            <div className="tech-grid mt-6">
+              <div className="tech-card">
+                <p className="tech-card__label">Backend</p>
+                <div className="tech-chip-list">
+                  <span className="tech-chip">Python</span>
+                  <span className="tech-chip">FastAPI</span>
+                  <span className="tech-chip">Uvicorn</span>
+                </div>
               </div>
-              <div className="metric-card">
-                <p className="metric-label">Procesado</p>
-                <p className="metric-value mt-2">Sin PNGs en disco</p>
+
+              <div className="tech-card">
+                <p className="tech-card__label">NLP / scraping</p>
+                <div className="tech-chip-list">
+                  <span className="tech-chip">NLTK</span>
+                  <span className="tech-chip">wordcloud</span>
+                  <span className="tech-chip">BeautifulSoup</span>
+                </div>
               </div>
-              <div className="metric-card">
-                <p className="metric-label">Dependencias</p>
-                <p className="metric-value mt-2">NLTK predescargado</p>
+
+              <div className="tech-card">
+                <p className="tech-card__label">Frontend</p>
+                <div className="tech-chip-list">
+                  <span className="tech-chip">TypeScript</span>
+                  <span className="tech-chip">React</span>
+                  <span className="tech-chip">Vite</span>
+                  <span className="tech-chip">Tailwind</span>
+                </div>
+              </div>
+
+              <div className="tech-card">
+                <p className="tech-card__label">Infraestructura</p>
+                <div className="tech-chip-list">
+                  <span className="tech-chip">Docker</span>
+                  <span className="tech-chip">Caddy</span>
+                  <span className="tech-chip">ARM64</span>
+                </div>
               </div>
             </div>
           </section>

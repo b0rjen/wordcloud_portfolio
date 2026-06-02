@@ -91,7 +91,7 @@
   .page-container {
     position: relative;
     z-index: 1;
-    width: min(100%, 64rem);
+    width: min(100%, 80rem);
     margin: 0 auto;
     padding: 1.5rem 1rem 4rem;
   }
@@ -361,6 +361,53 @@
   .hero-metrics {
     display: grid;
     gap: 1rem;
+  }
+
+  .tech-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .tech-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .tech-card {
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--bg-secondary) 84%, transparent), color-mix(in srgb, var(--card-bg) 96%, transparent));
+    padding: 1rem 1.1rem;
+  }
+
+  .tech-card__label {
+    font-family: var(--font-brand);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tech-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .tech-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--primary-color) 28%, var(--border-color));
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+    color: var(--text-primary);
+    padding: 0.4rem 0.75rem;
+    font-family: var(--font-brand);
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   @media (min-width: 768px) {

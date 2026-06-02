@@ -10,6 +10,20 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 class WordCloudService:
+    COMMON_STOPWORDS = {
+        'a', 'an', 'and', 'are', 'as', 'at', 'be', 'been', 'being', 'by',
+        'can', 'could', 'de', 'del', 'do', 'does', 'did', 'el', 'en', 'era',
+        'es', 'for', 'from', 'have', 'has', 'had', 'http', 'https', 'html',
+        'i', 'in', 'is', 'it', 'la', 'las', 'le', 'les', 'lo', 'los', 'me',
+        'my', 'no', 'not', 'of', 'o', 'on', 'or', 'para', 'per', 'por', 'que',
+        'se', 'si', 'sin', 'son', 'the', 'to', 'un', 'una', 'uno', 'unos',
+        'unas', 'use', 'used', 'using', 'was', 'were', 'we', 'will', 'with',
+        'www', 'you', 'your', 'y', 'al', 'con', 'sobre', 'como', 'cookies',
+        'cookie', 'consent', 'policy', 'privacy', 'terms', 'website', 'page',
+        'home', 'login', 'menu', 'content', 'click', 'read', 'more', 'also',
+        'amp', 'com', 'org', 'net', 'php', 'javascript', 'js'
+    }
+
     def __init__(self):
         self.download_nltk_data()
 
@@ -35,30 +49,19 @@ class WordCloudService:
 
     def get_stopwords(self, language: str = "english") -> set:
         """Get stopwords for the specified language"""
+        stop_words = set(self.COMMON_STOPWORDS)
         try:
-            stop_words = set(stopwords.words(language))
-            # Add common web stopwords
-            web_stopwords = {
-                'www', 'com', 'org', 'html', 'http', 'https', 'get', 'post',
-                'said', 'say', 'says', 'also', 'would', 'could', 'should',
-                'one', 'two', 'first', 'last', 'new', 'old', 'good', 'bad',
-                'big', 'small', 'right', 'left', 'way', 'well', 'like',
-                'just', 'may', 'might', 'much', 'many', 'use', 'used',
-                'using', 'make', 'made', 'making', 'take', 'taken', 'taking'
-            }
-            stop_words.update(web_stopwords)
-            return stop_words
-        except:
-            # Fallback to basic English stopwords
-            return {
-                'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to',
-                'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be',
-                'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
-                'will', 'would', 'could', 'should', 'may', 'might', 'must',
-                'shall', 'can', 'this', 'that', 'these', 'those', 'i', 'you',
-                'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us',
-                'them', 'my', 'your', 'his', 'her', 'its', 'our', 'their'
-            }
+            stop_words.update(stopwords.words(language))
+        except LookupError:
+            if language != "english":
+                try:
+                    stop_words.update(stopwords.words("english"))
+                except LookupError:
+                    pass
+        except Exception:
+            pass
+
+        return stop_words
 
     def clean_text(self, text: str) -> str:
         """Clean and preprocess text"""
