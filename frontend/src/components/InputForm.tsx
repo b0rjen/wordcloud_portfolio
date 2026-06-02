@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Type, Loader2, Download } from 'lucide-react';
+import { Download, FileText, Globe2, Languages, Loader2, Sparkles } from 'lucide-react';
 
 interface InputFormProps {
   onSubmit: (data: { text?: string; url?: string; language: string }) => void;
@@ -33,110 +33,128 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, onDownloadImage, loadin
   const isValid = inputType === 'text' ? text.trim() : url.trim();
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Generate Word Cloud</h2>
-        <p className="text-gray-600">
-          Create beautiful word clouds from text or web content
-        </p>
+    <div className="surface-card surface-card-hover p-6 md:p-8">
+      <div className="card-header">
+        <div>
+          <p className="section-kicker">Entrada</p>
+          <h2 className="section-title mt-2">Genera una nube de palabras</h2>
+          <p className="section-copy mt-3">
+            Usa texto directo o una URL pública para obtener frecuencias, estadísticas e imagen PNG.
+          </p>
+        </div>
+        <div className="hidden rounded-2xl border border-[var(--border-color)] bg-[rgba(249,115,22,0.1)] p-3 text-[var(--primary-light)] md:flex">
+          <Sparkles size={20} />
+        </div>
       </div>
 
       {/* Input Type Toggle */}
-      <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
+      <div className="toggle-shell mb-6">
         <button
           type="button"
           onClick={() => setInputType('text')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md font-medium transition-colors ${
+          className={`toggle-button flex items-center justify-center gap-2 ${
             inputType === 'text'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'toggle-button--active'
+              : 'toggle-button--idle'
           }`}
         >
-          <Type size={18} />
-          Text Input
+          <FileText size={18} />
+          Texto
         </button>
         <button
           type="button"
           onClick={() => setInputType('url')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md font-medium transition-colors ${
+          className={`toggle-button flex items-center justify-center gap-2 ${
             inputType === 'url'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'toggle-button--active'
+              : 'toggle-button--idle'
           }`}
         >
-          <Link size={18} />
-          URL Input
+          <Globe2 size={18} />
+          URL
         </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Language Selection */}
         <div>
-          <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-1">
-            Language
+          <label htmlFor="language" className="field-label">
+            <Languages size={16} className="text-[var(--primary-light)]" />
+            Idioma
           </label>
           <select
             id="language"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="select-shell"
           >
-            <option value="english">English</option>
+            <option value="english">Inglés</option>
             <option value="spanish">Español</option>
             <option value="french">Français</option>
             <option value="german">Deutsch</option>
             <option value="italian">Italiano</option>
             <option value="portuguese">Português</option>
           </select>
+          <p className="input-hint mt-2">
+            El idioma cambia el filtrado de palabras vacías.
+          </p>
         </div>
 
         {/* Input Field */}
         {inputType === 'text' ? (
           <div>
-            <label htmlFor="text" className="block text-sm font-medium text-gray-700 mb-1">
-              Text Content
+            <label htmlFor="text" className="field-label">
+              <FileText size={16} className="text-[var(--primary-light)]" />
+              Texto
             </label>
             <textarea
               id="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Paste your text here..."
+              placeholder="Pega tu texto aquí..."
               rows={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
+              className="textarea-shell"
               required
             />
+            <p className="input-hint mt-2">
+              Puedes pegar artículos, notas, descripciones o cualquier bloque de texto.
+            </p>
           </div>
         ) : (
           <div>
-            <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-1">
-              Website URL
+            <label htmlFor="url" className="field-label">
+              <Globe2 size={16} className="text-[var(--primary-light)]" />
+              URL del sitio web
             </label>
             <input
               type="url"
               id="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://example.com"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="https://ejemplo.com"
+              className="input-shell"
               required
             />
+            <p className="input-hint mt-2">
+              Ideal para artículos públicos, blogs o páginas con contenido legible.
+            </p>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-2">
+        <div className="grid gap-3 pt-2 md:grid-cols-2">
           <button
             type="submit"
             disabled={!isValid || loading}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="primary-button"
           >
             {loading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                Generating...
+                Generando...
               </>
             ) : (
-              'Generate Word Cloud'
+              'Generar nube'
             )}
           </button>
 
@@ -144,10 +162,10 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, onDownloadImage, loadin
             type="button"
             onClick={handleDownload}
             disabled={!isValid || loading}
-            className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="secondary-button"
           >
             <Download size={18} />
-            Download PNG
+            Descargar PNG
           </button>
         </div>
       </form>

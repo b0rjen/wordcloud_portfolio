@@ -51,15 +51,15 @@ const Tooltip: FC<TooltipProps> = ({
   const getArrowClasses = () => {
     switch (position) {
       case 'top':
-        return 'top-full left-1/2 transform -translate-x-1/2 border-t-8 border-l-8 border-r-8 border-t-gray-900 border-l-transparent border-r-transparent';
+        return 'top-full left-1/2 transform -translate-x-1/2 border-t-8 border-l-8 border-r-8 border-t-[var(--bg-secondary)] border-l-transparent border-r-transparent';
       case 'bottom':
-        return 'bottom-full left-1/2 transform -translate-x-1/2 border-b-8 border-l-8 border-r-8 border-b-gray-900 border-l-transparent border-r-transparent';
+        return 'bottom-full left-1/2 transform -translate-x-1/2 border-b-8 border-l-8 border-r-8 border-b-[var(--bg-secondary)] border-l-transparent border-r-transparent';
       case 'left':
-        return 'left-full top-1/2 transform -translate-y-1/2 border-l-8 border-t-8 border-b-8 border-l-gray-900 border-t-transparent border-b-transparent';
+        return 'left-full top-1/2 transform -translate-y-1/2 border-l-8 border-t-8 border-b-8 border-l-[var(--bg-secondary)] border-t-transparent border-b-transparent';
       case 'right':
-        return 'right-full top-1/2 transform -translate-y-1/2 border-r-8 border-t-8 border-b-8 border-r-gray-900 border-t-transparent border-b-transparent';
+        return 'right-full top-1/2 transform -translate-y-1/2 border-r-8 border-t-8 border-b-8 border-r-[var(--bg-secondary)] border-t-transparent border-b-transparent';
       default:
-        return 'top-full left-1/2 transform -translate-x-1/2 border-t-8 border-l-8 border-r-8 border-t-gray-900 border-l-transparent border-r-transparent';
+        return 'top-full left-1/2 transform -translate-x-1/2 border-t-8 border-l-8 border-r-8 border-t-[var(--bg-secondary)] border-l-transparent border-r-transparent';
     }
   };
 
@@ -74,7 +74,7 @@ const Tooltip: FC<TooltipProps> = ({
       {isVisible && (
         <div className="absolute z-50 pointer-events-none">
           <div
-            className={`px-4 py-3 text-sm text-white bg-gray-900 rounded-lg shadow-xl max-w-xs whitespace-normal transform transition-all duration-200 ease-out ${getPositionClasses()}`}
+            className={`max-w-xs whitespace-normal rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 py-3 text-sm text-[var(--text-primary)] shadow-2xl shadow-black/40 transform transition-all duration-200 ease-out ${getPositionClasses()}`}
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'scale(1)' : 'scale(0.95)',

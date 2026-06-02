@@ -27,20 +27,14 @@ const WordCloudVisualization: FC<WordCloudVisualizationProps> = ({ data }) => {
     const maxFrequency = Math.max(...Object.values(data.word_frequencies));
     const words = Object.entries(data.word_frequencies)
       .sort(([, a], [, b]) => b - a)
-      .slice(0, 60); // Show top 60 words for better density
+      .slice(0, 60);
 
-    // Professional color palettes inspired by PowerBI
     const colorPalettes = [
-      // Blue palette
-      ['#1f77b4', '#2ca02c', '#ff7f0e', '#d62728', '#9467bd'],
-      // Teal palette
-      ['#17becf', '#bcbd22', '#e377c2', '#7f7f7f', '#8c564b'],
-      // Modern palette
-      ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6'],
-      // PowerBI inspired
-      ['#118dff', '#12239e', '#e66c37', '#6b007b', '#e044a7'],
-      // Corporate palette
-      ['#005a9d', '#00bcf2', '#40e0d0', '#ff6b6b', '#4ecdc4']
+      ['#f97316', '#fb923c', '#f59e0b', '#38bdf8', '#e2e8f0'],
+      ['#ea580c', '#fdba74', '#d97706', '#cbd5e1', '#fb7185'],
+      ['#fb923c', '#fcd34d', '#f97316', '#60a5fa', '#cbd5e1'],
+      ['#f59e0b', '#f97316', '#c2410c', '#22d3ee', '#f8fafc'],
+      ['#ffedd5', '#fdba74', '#f97316', '#94a3b8', '#334155']
     ];
 
     const selectedPalette = colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
@@ -55,9 +49,8 @@ const WordCloudVisualization: FC<WordCloudVisualizationProps> = ({ data }) => {
     const getWordColor = (frequency: number): string => {
       const intensity = frequency / maxFrequency;
 
-      // Use palette colors for top words, gradient for others
       if (intensity > 0.7) {
-        return selectedPalette[0]; // Strongest color for most frequent
+        return selectedPalette[0];
       } else if (intensity > 0.5) {
         return selectedPalette[1];
       } else if (intensity > 0.3) {
@@ -91,18 +84,15 @@ const WordCloudVisualization: FC<WordCloudVisualizationProps> = ({ data }) => {
       return (Math.random() - 0.5) * 30; // -15 to +15 degrees
     };
 
-    // Generate positioned elements with physics
     return words.map(([word, frequency], index) => {
       const size = getWordSize(frequency);
       const orientation = getOrientation();
       const rotation = getRotation(orientation);
 
-      // Velocities based on word frequency (more frequent = slower)
       const intensity = frequency / maxFrequency;
-      const baseSpeed = 0.3 + (1 - intensity) * 0.7; // 0.3 to 1.0
+      const baseSpeed = 0.3 + (1 - intensity) * 0.7;
 
-      // Rotation speed: slower for bigger/more frequent words, faster for smaller ones
-      const rotationSpeed = (Math.random() - 0.5) * (0.5 + (1 - intensity) * 1.5); // -1.0 to 1.0 degrees per frame
+      const rotationSpeed = (Math.random() - 0.5) * (0.5 + (1 - intensity) * 1.5);
 
       return {
         word,
@@ -192,24 +182,47 @@ const WordCloudVisualization: FC<WordCloudVisualizationProps> = ({ data }) => {
   }, [isAnimationEnabled, wordElements]);
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Word Cloud Visualization</h3>
-        <div className="text-sm text-gray-600 mt-2">
-          <span className="mr-4">Total words: {data.total_words}</span>
-          <span>Unique words: {data.unique_words}</span>
+    <div className="surface-card surface-card-hover p-6 md:p-8">
+      <div className="card-header">
+        <div>
+          <p className="section-kicker">Resultados</p>
+          <h3 className="section-title mt-2">Visualización de la nube</h3>
+          <p className="section-copy mt-3">
+            Revisa las palabras más frecuentes, alterna el modo animado y analiza la densidad del vocabulario.
+          </p>
+        </div>
+        <div className="hidden rounded-2xl border border-[var(--border-color)] bg-[rgba(249,115,22,0.08)] px-4 py-3 text-right md:block">
+          <p className="stat-card__title">Resumen</p>
+          <p className="stat-card__value mt-2">{data.unique_words.toLocaleString('es-ES')}</p>
+          <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Palabras únicas</p>
         </div>
       </div>
 
-      {/* Modern WordCloud Container */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="stat-card">
+          <p className="stat-card__title">Palabras analizadas</p>
+          <p className="stat-card__value mt-2 text-[var(--primary-light)]">{data.total_words.toLocaleString('es-ES')}</p>
+        </div>
+        <div className="stat-card">
+          <p className="stat-card__title">Palabras únicas</p>
+          <p className="stat-card__value mt-2 text-[var(--secondary-color)]">{data.unique_words.toLocaleString('es-ES')}</p>
+        </div>
+        <div className="stat-card">
+          <p className="stat-card__title">Densidad de vocabulario</p>
+          <p className="stat-card__value mt-2 text-[var(--primary-color)]">
+            {Math.round((data.unique_words / data.total_words) * 100)}%
+          </p>
+        </div>
+      </div>
+
       <div
         ref={containerRef}
-        className="relative w-full h-96 bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 rounded-xl overflow-hidden border border-gray-200"
+        className="wordcloud-canvas relative mt-6 h-96 w-full overflow-hidden rounded-[1.25rem]"
       >
         {animatedElements.map((element) => (
           <div
             key={element.id}
-            className="absolute cursor-pointer select-none hover:scale-110 hover:z-20 transition-transform duration-200"
+            className="absolute cursor-pointer select-none transition-transform duration-200 hover:z-20 hover:scale-110"
             style={{
               left: `${element.x}%`,
               top: `${element.y}%`,
@@ -217,125 +230,124 @@ const WordCloudVisualization: FC<WordCloudVisualizationProps> = ({ data }) => {
               fontSize: `${element.size}px`,
               color: element.color,
               fontWeight: element.fontWeight,
-              fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.15)',
+              fontFamily: 'var(--font-body)',
+              textShadow: '0 2px 10px rgba(2,6,23,0.45)',
               lineHeight: 1,
               whiteSpace: 'nowrap',
               zIndex: Math.round(element.frequency),
             }}
-            title={`${element.word}: ${element.frequency} occurrences`}
+            title={`${element.word}: ${element.frequency} ocurrencias`}
           >
             {element.word}
           </div>
         ))}
 
-        {/* Subtle overlay pattern */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
       </div>
 
-      {/* Statistics Panel */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Top Words */}
-        <div>
-          <h4 className="text-md font-medium text-gray-900 mb-3 flex items-center">
-            <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-            Top Words
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="stat-card">
+          <h4 className="stat-card__title mb-4 flex items-center gap-3">
+            <span className="h-3 w-3 rounded-full bg-[var(--primary-color)]" />
+            Palabras principales
           </h4>
           <div className="space-y-2 max-h-40 overflow-y-auto">
             {Object.entries(data.top_words).slice(0, 10).map(([word, frequency]) => {
               const percentage = ((frequency / maxFrequency) * 100).toFixed(1);
               return (
-                <div key={word} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
-                  <span className="font-medium text-gray-800">{word}</span>
+                <div key={word} className="flex items-center justify-between rounded-xl border border-[var(--border-color)] bg-[rgba(15,23,42,0.55)] px-3 py-2">
+                  <span className="font-medium text-[var(--text-primary)]">{word}</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-16 bg-gray-200 rounded-full h-2">
+                    <div className="h-2 w-16 rounded-full bg-[rgba(148,163,184,0.18)]">
                       <div
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${percentage}%` }}
+                        className="h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${percentage}%`, background: 'var(--gradient-primary)' }}
                       ></div>
                     </div>
-                    <span className="text-sm text-gray-600 w-8 text-right">{frequency}</span>
+                    <span className="w-9 text-right text-sm text-[var(--text-secondary)]">
+                      {frequency}
+                    </span>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Animation Control */}
-          <div className="mt-4 pt-3 border-t border-gray-200">
+          <div className="mt-4 border-t border-[var(--border-color)] pt-4">
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-[var(--text-secondary)]">
                 Modo de visualización
               </label>
-              <div className="relative bg-gray-100 rounded-lg p-1 flex">
+              <div className="toggle-shell">
                 <button
+                  type="button"
                   onClick={() => setIsAnimationEnabled(false)}
-                  className={`flex-1 py-2 px-4 rounded-md font-medium text-sm transition-all duration-200 ${
+                  className={`toggle-button ${
                     !isAnimationEnabled
-                      ? 'bg-red-500 text-white shadow-md transform scale-105'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                      ? 'toggle-button--active'
+                      : 'toggle-button--idle'
                   }`}
                 >
                   Estático
                 </button>
                 <button
+                  type="button"
                   onClick={() => setIsAnimationEnabled(true)}
-                  className={`flex-1 py-2 px-4 rounded-md font-medium text-sm transition-all duration-200 ${
+                  className={`toggle-button ${
                     isAnimationEnabled
-                      ? 'bg-blue-500 text-white shadow-md transform scale-105'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                      ? 'toggle-button--active'
+                      : 'toggle-button--idle'
                   }`}
                 >
                   Animado
                 </button>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="input-hint">
                 {isAnimationEnabled
-                  ? 'Las palabras se mueven y rotan continuamente'
-                  : 'Visualización tradicional sin movimiento'
+                  ? 'Las palabras se mueven y rotan continuamente.'
+                  : 'Visualización tradicional, sin movimiento.'
                 }
               </p>
             </div>
           </div>
         </div>
 
-        {/* Statistics */}
-        <div>
-          <h4 className="text-md font-medium text-gray-900 mb-3 flex items-center">
-            <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-            Statistics
+        <div className="stat-card">
+          <h4 className="stat-card__title mb-4 flex items-center gap-3">
+            <span className="h-3 w-3 rounded-full bg-[var(--secondary-color)]" />
+            Estadísticas
           </h4>
           <div className="space-y-3">
             <Tooltip
-              content="Total number of words analyzed from your input text or URL content, including all repetitions. This represents the complete volume of text processed by the system."
+              content="Número total de palabras analizadas a partir del texto o la URL, incluyendo repeticiones. Representa el volumen completo de contenido procesado."
               position="left"
               delay={400}
             >
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 rounded-lg cursor-help transition-transform duration-200 hover:scale-105 hover:shadow-md">
-                <div className="text-2xl font-bold text-blue-600">{data.total_words.toLocaleString()}</div>
-                <div className="text-sm text-blue-700">Total Words Processed</div>
+              <div className="cursor-help rounded-2xl border border-[var(--border-color)] bg-[rgba(249,115,22,0.08)] px-4 py-3 transition-transform duration-200 hover:scale-[1.02]">
+                <div className="text-2xl font-bold text-[var(--primary-light)]">{data.total_words.toLocaleString('es-ES')}</div>
+                <div className="text-sm text-[var(--text-secondary)]">Palabras analizadas</div>
               </div>
             </Tooltip>
 
             <Tooltip
-              content="Number of distinct words discovered after removing duplicates and filtering out common stopwords (like 'the', 'and', 'is'). This shows the actual vocabulary richness of your content."
+              content="Número de palabras distintas encontradas tras eliminar repeticiones y palabras vacías comunes. Mide la riqueza real del vocabulario."
               position="left"
               delay={400}
             >
-              <div className="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 rounded-lg cursor-help transition-transform duration-200 hover:scale-105 hover:shadow-md">
-                <div className="text-2xl font-bold text-green-600">{data.unique_words.toLocaleString()}</div>
-                <div className="text-sm text-green-700">Unique Words Found</div>
+              <div className="cursor-help rounded-2xl border border-[var(--border-color)] bg-[rgba(59,130,246,0.08)] px-4 py-3 transition-transform duration-200 hover:scale-[1.02]">
+                <div className="text-2xl font-bold text-[var(--primary-light)]">{data.unique_words.toLocaleString('es-ES')}</div>
+                <div className="text-sm text-[var(--text-secondary)]">Palabras únicas</div>
               </div>
             </Tooltip>
 
             <Tooltip
-              content="Percentage representing vocabulary richness - calculated as (unique words ÷ total words) × 100. Higher percentages indicate more diverse and varied language use, while lower percentages suggest more repetitive content."
+              content="Porcentaje que representa la densidad del vocabulario: (palabras únicas ÷ palabras totales) × 100. Cuanto más alto, más variado es el contenido."
               position="left"
               delay={400}
             >
-              <div className="bg-gradient-to-r from-purple-50 to-purple-100 px-4 py-3 rounded-lg cursor-help transition-transform duration-200 hover:scale-105 hover:shadow-md">
-                <div className="text-2xl font-bold text-purple-600">{Math.round((data.unique_words / data.total_words) * 100)}%</div>
-                <div className="text-sm text-purple-700">Vocabulary Diversity</div>
+              <div className="cursor-help rounded-2xl border border-[var(--border-color)] bg-[rgba(245,158,11,0.08)] px-4 py-3 transition-transform duration-200 hover:scale-[1.02]">
+                <div className="text-2xl font-bold text-[var(--primary-light)]">{Math.round((data.unique_words / data.total_words) * 100)}%</div>
+                <div className="text-sm text-[var(--text-secondary)]">Densidad de vocabulario</div>
               </div>
             </Tooltip>
           </div>

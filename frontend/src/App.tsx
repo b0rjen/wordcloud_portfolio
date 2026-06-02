@@ -1,14 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import InputForm from './components/InputForm';
 import WordCloudVisualization from './components/WordCloudVisualization';
 import { wordCloudAPI } from './services/api';
 import { WordCloudData } from './types';
-import { AlertCircle, Cloud } from 'lucide-react';
+import { AlertCircle, Cloud, ArrowRight, Cpu, Layers3, ShieldCheck } from 'lucide-react';
 
 function App() {
   const [wordCloudData, setWordCloudData] = useState<WordCloudData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = 'GeneraWordclouds by b0rjen';
+  }, []);
 
   const handleGenerate = async (data: { text?: string; url?: string; language: string }) => {
     setLoading(true);
@@ -27,16 +31,16 @@ function App() {
           language: data.language,
         });
       } else {
-        throw new Error('No text or URL provided');
+        throw new Error('No se proporcionó texto ni URL');
       }
 
       setWordCloudData(response.data);
     } catch (err: any) {
-      console.error('Error generating word cloud:', err);
+      console.error('Error al generar la nube de palabras:', err);
       setError(
         err.response?.data?.detail ||
         err.message ||
-        'An error occurred while generating the word cloud'
+        'Ha ocurrido un error al generar la nube de palabras'
       );
     } finally {
       setLoading(false);
@@ -60,7 +64,7 @@ function App() {
           language: data.language,
         });
       } else {
-        throw new Error('No text or URL provided');
+        throw new Error('No se proporcionó texto ni URL');
       }
 
       // Create download link
@@ -73,11 +77,11 @@ function App() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err: any) {
-      console.error('Error downloading image:', err);
+      console.error('Error al descargar la imagen:', err);
       setError(
         err.response?.data?.detail ||
         err.message ||
-        'An error occurred while downloading the image'
+        'Ha ocurrido un error al descargar la imagen'
       );
     } finally {
       setLoading(false);
@@ -85,57 +89,143 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Cloud size={40} className="text-blue-600" />
-            <h1 className="text-4xl font-bold text-gray-900">WordCloud Generator</h1>
+    <div className="app-shell">
+      <div className="ambient-orb left-[-6rem] top-[-6rem] h-72 w-72 bg-[rgba(249,115,22,0.24)]" />
+      <div className="ambient-orb right-[-7rem] top-[12rem] h-80 w-80 bg-[rgba(59,130,246,0.16)]" />
+      <div className="ambient-orb bottom-[-8rem] left-[20%] h-96 w-96 bg-[rgba(15,23,42,0.85)]" />
+
+      <div className="page-container">
+        <section className="mb-10 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+          <div className="space-y-6">
+            <div className="hero-badge">
+              <Cloud size={14} />
+              <span>FastAPI · React · NLTK · Nubes de palabras</span>
+            </div>
+            <div className="space-y-4">
+              <h1 className="hero-title">GeneraWordclouds by b0rjen</h1>
+              <p className="hero-copy">
+                Convierte textos o URLs en nubes de palabras interactivas, con estadísticas claras,
+                exportación PNG en memoria y una interfaz inspirada en un portfolio técnico.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3 text-sm text-[var(--text-secondary)]">
+              <span className="hero-badge">Texto o URL</span>
+              <span className="hero-badge">Sin temporales PNG</span>
+              <span className="hero-badge">Frontend y API en el mismo origen</span>
+            </div>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Transform any text or web content into beautiful, interactive word clouds.
-            Discover the most frequent words and visualize your content in a new way.
-          </p>
-        </div>
 
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Input Form */}
-          <InputForm
-            onSubmit={handleGenerate}
-            onDownloadImage={handleDownloadImage}
-            loading={loading}
-          />
+          <aside className="surface-card surface-card-hover p-6 md:p-8">
+            <p className="section-kicker">Resumen técnico</p>
+            <h2 className="section-title mt-2">Listo para Raspberry Pi y Caddy</h2>
+            <p className="section-copy mt-3">
+              El backend predescarga NLTK en build, sirve el frontend estático y genera las imágenes
+              en memoria para evitar acumulación de archivos temporales.
+            </p>
 
-          {/* Error Display */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-              <AlertCircle size={20} className="text-red-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="text-red-800 font-medium">Error</h3>
-                <p className="text-red-700 mt-1">{error}</p>
+            <div className="hero-metrics mt-6">
+              <div className="metric-card">
+                <p className="metric-label">Arquitectura</p>
+                <p className="metric-value mt-2">Un solo contenedor</p>
+              </div>
+              <div className="metric-card">
+                <p className="metric-label">Procesado</p>
+                <p className="metric-value mt-2">Sin PNGs en disco</p>
+              </div>
+              <div className="metric-card">
+                <p className="metric-label">Dependencias</p>
+                <p className="metric-value mt-2">NLTK predescargado</p>
               </div>
             </div>
-          )}
+          </aside>
+        </section>
 
-          {/* Word Cloud Visualization */}
-          {wordCloudData && (
-            <WordCloudVisualization data={wordCloudData} />
-          )}
+        <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="space-y-8">
+            <InputForm
+              onSubmit={handleGenerate}
+              onDownloadImage={handleDownloadImage}
+              loading={loading}
+            />
 
-          {/* Loading State */}
-          {loading && !wordCloudData && (
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Processing your content...</p>
-            </div>
-          )}
-        </div>
+            {error && (
+              <div className="surface-card border border-[rgba(239,68,68,0.35)] bg-[rgba(127,29,29,0.35)] p-5">
+                <div className="flex items-start gap-3">
+                  <AlertCircle size={20} className="mt-0.5 flex-shrink-0 text-red-300" />
+                  <div>
+                    <h3 className="font-semibold text-red-100">Error</h3>
+                    <p className="mt-1 text-sm text-red-100/90">{error}</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
-        {/* Footer */}
-        <footer className="mt-16 text-center text-gray-500 text-sm">
-          <p>Built with React, FastAPI, and Python • WordCloud Portfolio Project</p>
+            {!wordCloudData && !loading && (
+              <div className="surface-card p-6 md:p-8">
+                <p className="section-kicker">Siguiente paso</p>
+                <h2 className="section-title mt-2">Pega contenido y genera tu nube</h2>
+                <p className="section-copy mt-3">
+                  Puedes usar texto libre o una URL pública. La visualización mostrará las palabras
+                  más frecuentes y la diversidad del vocabulario procesado.
+                </p>
+                <div className="mt-6 grid gap-4 md:grid-cols-3">
+                  <div className="stat-card">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-full bg-[rgba(249,115,22,0.18)] p-2 text-[var(--primary-light)]">
+                        <ArrowRight size={16} />
+                      </div>
+                      <div>
+                        <p className="stat-card__title">Paso 1</p>
+                        <p className="mt-1 text-sm text-[var(--text-secondary)]">Añade texto o URL</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-full bg-[rgba(249,115,22,0.18)] p-2 text-[var(--primary-light)]">
+                        <Layers3 size={16} />
+                      </div>
+                      <div>
+                        <p className="stat-card__title">Paso 2</p>
+                        <p className="mt-1 text-sm text-[var(--text-secondary)]">Procesa palabras y frecuencias</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-full bg-[rgba(249,115,22,0.18)] p-2 text-[var(--primary-light)]">
+                        <ShieldCheck size={16} />
+                      </div>
+                      <div>
+                        <p className="stat-card__title">Paso 3</p>
+                        <p className="mt-1 text-sm text-[var(--text-secondary)]">Descarga el PNG final</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-6 flex items-center gap-2 text-sm text-[var(--text-muted)]">
+                  <Cpu size={16} className="text-[var(--primary-light)]" />
+                  <span>Si usas `npm run dev`, asegúrate de tener el backend corriendo en `:8000`.</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-8">
+            {wordCloudData && (
+              <WordCloudVisualization data={wordCloudData} />
+            )}
+          </div>
+        </section>
+
+        <footer className="mt-16 border-t border-[var(--border-color)] pt-6 text-center">
+          <p className="footer-text">
+            Diseñado por{' '}
+            <a className="footer-link" href="https://borjen.dev" target="_blank" rel="noreferrer">
+              b0rjen
+            </a>{' '}
+            para su portfolio.
+          </p>
         </footer>
       </div>
     </div>
