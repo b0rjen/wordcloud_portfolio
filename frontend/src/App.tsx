@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import InputForm from './components/InputForm';
 import WordCloudVisualization from './components/WordCloudVisualization';
 import { wordCloudAPI } from './services/api';

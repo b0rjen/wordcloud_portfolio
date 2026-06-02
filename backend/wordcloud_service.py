@@ -1,6 +1,5 @@
 import re
-import tempfile
-import os
+from io import BytesIO
 from collections import Counter
 from typing import List, Dict, Any
 import requests
@@ -9,7 +8,6 @@ from wordcloud import WordCloud
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import numpy as np
 
 class WordCloudService:
     def __init__(self):
@@ -21,6 +19,14 @@ class WordCloudService:
             nltk.data.find('tokenizers/punkt')
         except LookupError:
             nltk.download('punkt')
+
+        try:
+            nltk.data.find('tokenizers/punkt_tab')
+        except LookupError:
+            try:
+                nltk.download('punkt_tab')
+            except Exception:
+                pass
 
         try:
             nltk.data.find('corpora/stopwords')
@@ -169,24 +175,22 @@ class WordCloudService:
 
         return wordcloud
 
-    def generate_image_from_text(self, text: str, language: str = "english") -> str:
-        """Generate wordcloud image from text and return file path"""
+    def _wordcloud_to_png_bytes(self, wordcloud: WordCloud) -> bytes:
+        image = wordcloud.to_image()
+        buffer = BytesIO()
+        image.save(buffer, format="PNG")
+        return buffer.getvalue()
+
+    def generate_image_from_text(self, text: str, language: str = "english") -> bytes:
+        """Generate wordcloud image from text and return PNG bytes"""
         data = self.generate_from_text(text, language)
         wordcloud = self.create_wordcloud_image(data["word_frequencies"])
 
-        # Save to temporary file
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
-        wordcloud.to_file(temp_file.name)
+        return self._wordcloud_to_png_bytes(wordcloud)
 
-        return temp_file.name
-
-    def generate_image_from_url(self, url: str, language: str = "english") -> str:
-        """Generate wordcloud image from URL and return file path"""
+    def generate_image_from_url(self, url: str, language: str = "english") -> bytes:
+        """Generate wordcloud image from URL and return PNG bytes"""
         data = self.generate_from_url(url, language)
         wordcloud = self.create_wordcloud_image(data["word_frequencies"])
 
-        # Save to temporary file
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
-        wordcloud.to_file(temp_file.name)
-
-        return temp_file.name
+        return self._wordcloud_to_png_bytes(wordcloud)

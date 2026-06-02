@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef, type FC } from 'react';
 import { WordCloudData } from '../types';
 import Tooltip from './Tooltip';
 
@@ -22,7 +22,7 @@ interface WordElement {
   id: string;
 }
 
-const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data }) => {
+const WordCloudVisualization: FC<WordCloudVisualizationProps> = ({ data }) => {
   const wordElements = useMemo(() => {
     const maxFrequency = Math.max(...Object.values(data.word_frequencies));
     const words = Object.entries(data.word_frequencies)
@@ -52,7 +52,7 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
       return Math.round(minSize + (intensity * (maxSize - minSize)));
     };
 
-    const getWordColor = (frequency: number, index: number): string => {
+    const getWordColor = (frequency: number): string => {
       const intensity = frequency / maxFrequency;
 
       // Use palette colors for top words, gradient for others
@@ -78,7 +78,7 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
       return '400';
     };
 
-    const getOrientation = (index: number): 'horizontal' | 'vertical' => {
+    const getOrientation = (): 'horizontal' | 'vertical' => {
       // Mix of horizontal and vertical orientations like PowerBI
       return Math.random() > 0.25 ? 'horizontal' : 'vertical';
     };
@@ -94,7 +94,7 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
     // Generate positioned elements with physics
     return words.map(([word, frequency], index) => {
       const size = getWordSize(frequency);
-      const orientation = getOrientation(index);
+      const orientation = getOrientation();
       const rotation = getRotation(orientation);
 
       // Velocities based on word frequency (more frequent = slower)
@@ -108,7 +108,7 @@ const WordCloudVisualization: React.FC<WordCloudVisualizationProps> = ({ data })
         word,
         frequency,
         size,
-        color: getWordColor(frequency, index),
+        color: getWordColor(frequency),
         orientation,
         fontWeight: getFontWeight(frequency),
         x: Math.random() * 70 + 15, // 15% to 85% to avoid edge spawning

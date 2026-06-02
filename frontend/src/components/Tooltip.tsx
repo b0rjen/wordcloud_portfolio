@@ -1,20 +1,20 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef, type FC, type ReactNode } from 'react';
 
 interface TooltipProps {
   content: string;
-  children: React.ReactNode;
+  children: ReactNode;
   position?: 'top' | 'bottom' | 'left' | 'right';
   delay?: number;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({
+const Tooltip: FC<TooltipProps> = ({
   content,
   children,
   position = 'top',
   delay = 500
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showTooltip = () => {
     if (timeoutRef.current) {

@@ -1,24 +1,17 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
 import os
-import tempfile
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import Response
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 from wordcloud_service import WordCloudService
 
 app = FastAPI(title="WordCloud API", version="1.0.0")
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],  # React dev servers
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # Initialize service
 wordcloud_service = WordCloudService()
+STATIC_DIR = os.getenv("STATIC_DIR", "/app/static")
+os.makedirs(STATIC_DIR, exist_ok=True)
 
 class TextInput(BaseModel):
     text: str
@@ -27,10 +20,6 @@ class TextInput(BaseModel):
 class URLInput(BaseModel):
     url: str
     language: str = "english"
-
-@app.get("/")
-async def root():
-    return {"message": "WordCloud API is running"}
 
 @app.post("/generate/text")
 async def generate_from_text(input_data: TextInput):
@@ -60,15 +49,11 @@ async def generate_from_url(input_data: URLInput):
 async def generate_image_from_text(input_data: TextInput):
     try:
         # Generate wordcloud image
-        image_path = wordcloud_service.generate_image_from_text(
+        png_bytes = wordcloud_service.generate_image_from_text(
             input_data.text,
             input_data.language
         )
-        return FileResponse(
-            path=image_path,
-            media_type="image/png",
-            filename="wordcloud.png"
-        )
+        return Response(content=png_bytes, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -76,17 +61,15 @@ async def generate_image_from_text(input_data: TextInput):
 async def generate_image_from_url(input_data: URLInput):
     try:
         # Generate wordcloud image
-        image_path = wordcloud_service.generate_image_from_url(
+        png_bytes = wordcloud_service.generate_image_from_url(
             input_data.url,
             input_data.language
         )
-        return FileResponse(
-            path=image_path,
-            media_type="image/png",
-            filename="wordcloud.png"
-        )
+        return Response(content=png_bytes, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
