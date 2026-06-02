@@ -91,9 +91,29 @@
   .page-container {
     position: relative;
     z-index: 1;
-    max-width: 1280px;
+    width: min(100%, 64rem);
     margin: 0 auto;
     padding: 1.5rem 1rem 4rem;
+  }
+
+  .page-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .hero-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 2rem 0 0;
+  }
+
+  .content-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
 
   @media (min-width: 768px) {
@@ -341,6 +361,12 @@
   .hero-metrics {
     display: grid;
     gap: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .hero-metrics {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 
   .metric-card {
